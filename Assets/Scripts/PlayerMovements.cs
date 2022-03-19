@@ -8,6 +8,8 @@ using UnityEngine.InputSystem;
 public class PlayerMovements : MonoBehaviour
 {
     [SerializeField] private float runSpeed = 5f;
+    [SerializeField] private float jumpSpeed = 10f;
+
     private Vector2 moveInput;
     private Rigidbody2D myRigidbody;
     private Animator myAnimator;
@@ -38,6 +40,14 @@ public class PlayerMovements : MonoBehaviour
 
         bool playerHasHorizontalSpeed = Mathf.Abs(myRigidbody.velocity.x) > Mathf.Epsilon;
         myAnimator.SetBool("IsRunning", playerHasHorizontalSpeed);
+    }
+
+    void OnJump(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            myRigidbody.velocity += new Vector2(0f, jumpSpeed);
+        }
     }
 
     void FlipSprite()

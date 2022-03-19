@@ -23735,6 +23735,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 154228771930144722, guid: 65061a06e49c16641952cacc351731b2, type: 3}
+      propertyPath: runSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 154228771930144722, guid: 65061a06e49c16641952cacc351731b2, type: 3}
+      propertyPath: jumpSpeed
+      value: 22
+      objectReference: {fileID: 0}
     - target: {fileID: 239049586140797611, guid: 65061a06e49c16641952cacc351731b2, type: 3}
       propertyPath: m_Name
       value: Ginger (Player)
@@ -23786,6 +23794,14 @@ PrefabInstance:
     - target: {fileID: 8244296575098576881, guid: 65061a06e49c16641952cacc351731b2, type: 3}
       propertyPath: m_Constraints
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8244296575098576881, guid: 65061a06e49c16641952cacc351731b2, type: 3}
+      propertyPath: m_GravityScale
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8244296575098576881, guid: 65061a06e49c16641952cacc351731b2, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 65061a06e49c16641952cacc351731b2, type: 3}
