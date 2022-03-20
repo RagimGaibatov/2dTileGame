@@ -9,12 +9,19 @@ public class PlayerMovements : MonoBehaviour
 {
     [SerializeField] private float runSpeed = 5f;
     [SerializeField] private float jumpSpeed = 10f;
+    [SerializeField] private float climbSpeed = 5f;
+    [SerializeField] private LayerMask jumpLayer;
+    [SerializeField] private LayerMask groundLayer;
 
 
     private Vector2 moveInput;
+    private bool jumpInput;
+
     private Rigidbody2D myRigidbody;
     private Animator myAnimator;
     private CapsuleCollider2D myCapsuleCollider2D;
+
+    private bool wasGrounded;
 
     void Start()
     {
@@ -23,16 +30,24 @@ public class PlayerMovements : MonoBehaviour
         myCapsuleCollider2D = GetComponent<CapsuleCollider2D>();
     }
 
+    void ResetAnimator()
+    {
+        myAnimator.SetBool("IsRunning", false);
+        myAnimator.SetBool("IsClimbing", false);
+    }
+
+    void FixedUpdate()
+    {
+        wasGrounded |= Physics2D.Raycast(transform.position, Vector2.down, .03f, groundLayer);
+    }
 
     void Update()
     {
+        ResetAnimator();
         Run();
         FlipSprite();
-    }
-
-    void OnMove(InputValue value)
-    {
-        moveInput = value.Get<Vector2>();
+        ClimbLadder();
+        Jump();
     }
 
 
@@ -45,17 +60,38 @@ public class PlayerMovements : MonoBehaviour
         myAnimator.SetBool("IsRunning", playerHasHorizontalSpeed);
     }
 
-    void OnJump(InputValue value)
+    void Jump()
     {
-        if (!myCapsuleCollider2D.IsTouchingLayers(LayerMask.GetMask("Ground")))
+        if (myCapsuleCollider2D.IsTouchingLayers(jumpLayer) && wasGrounded)
+        {
+            if (jumpInput)
+            {
+                wasGrounded = false;
+                myRigidbody.velocity += new Vector2(0f, jumpSpeed);
+            }
+        }
+
+        jumpInput = false;
+    }
+
+    void ClimbLadder()
+    {
+        if (!myCapsuleCollider2D.IsTouchingLayers(LayerMask.GetMask("Ladder")) ||
+            Mathf.Approximately(moveInput.y, 0))
         {
             return;
         }
 
-        if (value.isPressed)
+        if (myRigidbody.velocity.y > climbSpeed)
         {
-            myRigidbody.velocity += new Vector2(0f, jumpSpeed);
+            return;
         }
+
+        Vector2 playerVelocity = new Vector2(myRigidbody.velocity.x, moveInput.y * climbSpeed);
+        myRigidbody.velocity = playerVelocity;
+
+        bool playerHasVerticalSpeed = Mathf.Abs(myRigidbody.velocity.y) > Mathf.Epsilon;
+        myAnimator.SetBool("IsClimbing", playerHasVerticalSpeed);
     }
 
     void FlipSprite()
@@ -67,4 +103,18 @@ public class PlayerMovements : MonoBehaviour
             transform.localScale = new Vector2(Mathf.Sign(myRigidbody.velocity.x), 1f);
         }
     }
+
+    #region Input
+
+    void OnJump(InputValue value)
+    {
+        jumpInput = value.isPressed;
+    }
+
+    void OnMove(InputValue value)
+    {
+        moveInput = value.Get<Vector2>();
+    }
+
+    #endregion
 }
