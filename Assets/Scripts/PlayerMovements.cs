@@ -35,10 +35,10 @@ public class PlayerMovements : MonoBehaviour
         myAnimator.SetBool("IsRunning", false);
         myAnimator.SetBool("IsClimbing", false);
     }
-
+ 
     void FixedUpdate()
     {
-        wasGrounded |= Physics2D.Raycast(transform.position, Vector2.down, .03f, groundLayer);
+        wasGrounded |= Physics2D.Raycast(transform.position, Vector2.down, .05f, groundLayer);
     }
 
     void Update()
