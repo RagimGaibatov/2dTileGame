@@ -13,32 +13,29 @@ public class PlayerMovements : MonoBehaviour
     [SerializeField] private LayerMask jumpLayer;
     [SerializeField] private LayerMask groundLayer;
 
-
     private Vector2 moveInput;
     private bool jumpInput;
 
     private Rigidbody2D myRigidbody;
     private Animator myAnimator;
-    private CapsuleCollider2D myCapsuleCollider2D;
+    private CapsuleCollider2D myCapsuleCollider;
+    private BoxCollider2D myFeetCollider;
 
     private bool wasGrounded;
+    private bool jumpAllowed;
 
     void Start()
     {
         myRigidbody = GetComponent<Rigidbody2D>();
         myAnimator = GetComponent<Animator>();
-        myCapsuleCollider2D = GetComponent<CapsuleCollider2D>();
+        myCapsuleCollider = GetComponent<CapsuleCollider2D>();
+        myFeetCollider = GetComponent<BoxCollider2D>();
     }
 
     void ResetAnimator()
     {
         myAnimator.SetBool("IsRunning", false);
         myAnimator.SetBool("IsClimbing", false);
-    }
- 
-    void FixedUpdate()
-    {
-        wasGrounded |= Physics2D.Raycast(transform.position, Vector2.down, .05f, groundLayer);
     }
 
     void Update()
@@ -47,9 +44,14 @@ public class PlayerMovements : MonoBehaviour
         Run();
         FlipSprite();
         ClimbLadder();
+        CheckGrounded();
         Jump();
     }
 
+    private void CheckGrounded()
+    {
+        wasGrounded |= Physics2D.Raycast(transform.position, Vector2.down, .03f, groundLayer);
+    }
 
     void Run()
     {
@@ -62,7 +64,7 @@ public class PlayerMovements : MonoBehaviour
 
     void Jump()
     {
-        if (myCapsuleCollider2D.IsTouchingLayers(jumpLayer) && wasGrounded)
+        if (myFeetCollider.IsTouchingLayers(jumpLayer) && wasGrounded)
         {
             if (jumpInput)
             {
@@ -76,7 +78,7 @@ public class PlayerMovements : MonoBehaviour
 
     void ClimbLadder()
     {
-        if (!myCapsuleCollider2D.IsTouchingLayers(LayerMask.GetMask("Ladder")) ||
+        if (!myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Ladder")) ||
             Mathf.Approximately(moveInput.y, 0))
         {
             return;
