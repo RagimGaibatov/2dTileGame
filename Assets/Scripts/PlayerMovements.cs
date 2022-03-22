@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
 public class PlayerMovements : MonoBehaviour
 {
     [SerializeField] private float runSpeed = 5f;
@@ -12,23 +13,25 @@ public class PlayerMovements : MonoBehaviour
     [SerializeField] private float climbSpeed = 5f;
     [SerializeField] private LayerMask jumpLayer;
     [SerializeField] private LayerMask groundLayer;
-
+    [SerializeField] private Vector2 deathkick = new Vector2(5f, 5f);
     private Vector2 moveInput;
     private bool jumpInput;
 
     private Rigidbody2D myRigidbody;
     private Animator myAnimator;
-    private CapsuleCollider2D myCapsuleCollider;
+    private CapsuleCollider2D myBodyCollider;
     private BoxCollider2D myFeetCollider;
 
     private bool wasGrounded;
     private bool jumpAllowed;
 
+    private bool isAlive = true;
+
     void Start()
     {
         myRigidbody = GetComponent<Rigidbody2D>();
         myAnimator = GetComponent<Animator>();
-        myCapsuleCollider = GetComponent<CapsuleCollider2D>();
+        myBodyCollider = GetComponent<CapsuleCollider2D>();
         myFeetCollider = GetComponent<BoxCollider2D>();
     }
 
@@ -40,12 +43,18 @@ public class PlayerMovements : MonoBehaviour
 
     void Update()
     {
+        if (!isAlive)
+        {
+            return;
+        }
+
         ResetAnimator();
         Run();
         FlipSprite();
         ClimbLadder();
         CheckGrounded();
         Jump();
+        Die();
     }
 
     private void CheckGrounded()
@@ -105,6 +114,17 @@ public class PlayerMovements : MonoBehaviour
             transform.localScale = new Vector2(Mathf.Sign(myRigidbody.velocity.x), 1f);
         }
     }
+
+    void Die()
+    {
+        if (myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Enemies")))
+        {
+            isAlive = false;
+            myAnimator.SetTrigger("Dying");
+            myRigidbody.velocity = deathkick;
+        }
+    }
+
 
     #region Input
 
