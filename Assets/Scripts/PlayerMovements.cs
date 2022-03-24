@@ -13,6 +13,8 @@ public class PlayerMovements : MonoBehaviour
     [SerializeField] private float climbSpeed = 5f;
     [SerializeField] private LayerMask jumpLayer;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private GameObject bullet;
+    [SerializeField] private Transform gun;
 
     private Vector2 moveInput;
     private bool jumpInput;
@@ -128,6 +130,13 @@ public class PlayerMovements : MonoBehaviour
 
     #region Input
 
+    void OnFire(InputValue value)
+    {
+        if (!isAlive) { return;}
+
+        Instantiate(bullet, gun.position, transform.rotation);
+    }
+    
     void OnJump(InputValue value)
     {
         jumpInput = value.isPressed;
