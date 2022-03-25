@@ -124,6 +124,7 @@ public class PlayerMovements : MonoBehaviour
         {
             isAlive = false;
             myAnimator.SetTrigger("Dying");
+            FindObjectOfType<GameSession>().ProcessPlayerDeath();
         }
     }
 
@@ -132,11 +133,14 @@ public class PlayerMovements : MonoBehaviour
 
     void OnFire(InputValue value)
     {
-        if (!isAlive) { return;}
+        if (!isAlive)
+        {
+            return;
+        }
 
         Instantiate(bullet, gun.position, transform.rotation);
     }
-    
+
     void OnJump(InputValue value)
     {
         jumpInput = value.isPressed;
